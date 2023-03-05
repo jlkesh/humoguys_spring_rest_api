@@ -24,6 +24,10 @@ public class AuthUser extends Auditable {
 
     private String profilePicture;
 
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "auth_user_auth_role_table",
@@ -40,5 +44,11 @@ public class AuthUser extends Auditable {
         this.password = password;
         this.profilePicture = profilePicture;
         this.roles = roles;
+    }
+
+    public enum Status {
+        ACTIVE,
+        NOT_ACTIVATED,
+        BLOCKED
     }
 }

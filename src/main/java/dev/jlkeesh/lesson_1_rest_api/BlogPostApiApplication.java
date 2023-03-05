@@ -11,10 +11,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.List;
 
 @SpringBootApplication
+@EnableAsync
 @OpenAPIDefinition(
         info = @Info(
                 title = "Study Project",
@@ -36,7 +38,7 @@ public class BlogPostApiApplication {
         SpringApplication.run(BlogPostApiApplication.class, args);
     }
 
-//    @Bean
+    @Bean
     CommandLineRunner commandLineRunner(AuthRoleRepository authRoleRepository) {
         return args -> {
             authRoleRepository.saveAll(List.of(
