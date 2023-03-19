@@ -38,7 +38,7 @@ public class BlogPostApiApplication {
         SpringApplication.run(BlogPostApiApplication.class, args);
     }
 
-    @Bean
+//    @Bean
     CommandLineRunner commandLineRunner(AuthRoleRepository authRoleRepository) {
         return args -> {
             authRoleRepository.saveAll(List.of(
