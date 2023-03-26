@@ -7,6 +7,7 @@ import dev.jlkeesh.lesson_1_rest_api.dto.blog.BlogDTO;
 import dev.jlkeesh.lesson_1_rest_api.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class BlogController {
         this.blogService = blogService;
     }
 
+    @PreAuthorize("hasAnyRole(T(dev.jlkeesh.lesson_1_rest_api.controller.Permissions).CREATE_POST)")
     @PostMapping("/create")
     public ResponseEntity<String> create(@RequestBody BlogCreateDTO dto) {
         String id = blogService.create(dto);

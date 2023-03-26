@@ -10,12 +10,16 @@ import dev.jlkeesh.lesson_1_rest_api.repository.AuthTokenRepository;
 import dev.jlkeesh.lesson_1_rest_api.repository.AuthUserRepository;
 import dev.jlkeesh.lesson_1_rest_api.utils.MailService;
 import lombok.NonNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -24,7 +28,7 @@ public record AuthUserService(AuthUserRepository authUserRepository,
                               AuthTokenRepository authTokenRepository,
 
                               MailService mailService,
-                              AuthUserMapper mapper) {
+                              AuthUserMapper mapper) implements UserDetailsService {
 
     public String save(@NonNull UserRegisterDTO dto) {
         AuthRole authRole = authRoleRepository.findByCode("USER")
@@ -62,5 +66,17 @@ public record AuthUserService(AuthUserRepository authUserRepository,
                 .orElseThrow(() -> new RuntimeException("AuthUser not found"));
         authUser.setStatus(AuthUser.Status.ACTIVE);
         authUserRepository.save(authUser);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AuthUser authUser = authUserRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        Objects.requireNonNullElse(authUser.getRoles(), List.<AuthRole>of())
+                .forEach(r -> {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + r.getCode()));
+                });
+        return new User(authUser.getUsername(), authUser.getPassword(), authorities);
     }
 }
